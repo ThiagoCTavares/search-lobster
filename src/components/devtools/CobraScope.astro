@@ -1,0 +1,191 @@
+---
+// CobraScope.astro - V4.0 (Semantic Recon Engine)
+// Baseado no NAJA® Scope - Foco em Identificação por Conteúdo e Contexto
+---
+<script>
+  (function() {
+    let isActive = false;
+    let isLocked = false;
+    let lastHighlighted = null;
+    
+    // Tema: Verde Matrix para Tech, Rosa Neon para Design (Alternável com 'T')
+    const THEMES = {
+        NEON: { color: '#ff0064', bg: 'rgba(255, 0, 100, 0.05)' },
+        MATRIX: { color: '#00ff00', bg: 'rgba(0, 255, 0, 0.05)' }
+    };
+    let currentThemeKey = 'NEON';
+
+    // --- ELEMENTOS UI ---
+    const highlighter = document.createElement('div');
+    Object.assign(highlighter.style, {
+        position: 'fixed', display: 'none', pointerEvents: 'none', zIndex: '999998',
+        border: `2px solid ${THEMES.NEON.color}`, backgroundColor: THEMES.NEON.bg,
+        transition: 'all 0.05s linear', borderRadius: '4px'
+    });
+    document.body.appendChild(highlighter);
+
+    const tooltip = document.createElement('div');
+    Object.assign(tooltip.style, {
+        position: 'fixed', display: 'none', zIndex: '999999', pointerEvents: 'none',
+        background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(12px)',
+        color: '#fff', border: '1px solid #334155',
+        borderRadius: '6px', fontSize: '12px', fontFamily: 'Menlo, monospace',
+        boxShadow: '0 10px 30px -5px rgba(0,0,0,0.8)', minWidth: '260px', maxWidth: '320px'
+    });
+    document.body.appendChild(tooltip);
+
+    // --- INTELIGÊNCIA NAJA® (Portado do seu script) ---
+    
+    function truncate(str, n) {
+        return (str.length > n) ? str.slice(0, n-1) + '...' : str;
+    }
+
+    function getElementLabel(el) {
+        // 1. ID é Rei
+        if (el.id) return `<span style="color:${THEMES[currentThemeKey].color}">#${el.id}</span>`;
+
+        // 2. Conteúdo de Texto (Para botões, títulos, links)
+        // Ignora se for muito grande ou tiver muitos filhos
+        if (['H1','H2','H3','H4','H5','H6','BUTTON','A','P','SPAN','LI'].includes(el.tagName) && el.children.length < 2) {
+            const text = el.innerText.trim().replace(/\s+/g, ' ');
+            if (text && text.length < 40) {
+                return `<span style="color:#bd93f9">${el.tagName.toLowerCase()}</span> <span style="color:#f1fa8c">"${truncate(text, 25)}"</span>`;
+            }
+        }
+
+        // 3. Imagens
+        if (el.tagName === 'IMG') {
+            const alt = el.getAttribute('alt');
+            if (alt) return `<span style="color:#bd93f9">img</span> <span style="color:#f1fa8c">"${truncate(alt, 20)}"</span>`;
+            const src = el.getAttribute('src') || '';
+            return `<span style="color:#bd93f9">img</span> <span style="color:#6272a4">...${src.slice(-15)}</span>`;
+        }
+
+        // 4. Caminho Relativo ao Pai com ID (O "Pathfinder")
+        let parent = el.parentElement;
+        let depth = 0;
+        while (parent && parent.tagName !== 'BODY' && depth < 3) {
+            if (parent.id) {
+                // Encontrou um pai com ID!
+                const tagName = `<span style="color:#bd93f9">${el.tagName.toLowerCase()}</span>`;
+                return `<span style="color:#6272a4">#${parent.id} ></span> ${tagName}`;
+            }
+            parent = parent.parentElement;
+            depth++;
+        }
+
+        // 5. Fallback: Tag + Classe Principal (se houver alguma legível)
+        let tag = `<span style="color:#bd93f9">${el.tagName.toLowerCase()}</span>`;
+        const classes = [...el.classList].filter(c => !c.includes(':') && !c.includes('[') && c.length > 3);
+        if (classes.length > 0) {
+            return `${tag}<span style="color:#50fa7b">.${classes[0]}</span>`;
+        }
+
+        // 6. Último recurso: Tag + Index
+        const index = Array.from(el.parentNode.children).indexOf(el) + 1;
+        return `${tag}<span style="color:#6272a4">:nth-child(${index})</span>`;
+    }
+
+    function getTechInfo(el) {
+        const s = window.getComputedStyle(el);
+        const rgbToHex = (rgb) => {
+            if (!rgb || !rgb.startsWith('rgb')) return rgb;
+            const [r, g, b] = rgb.match(/\d+/g).map(Number);
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        };
+        const color = rgbToHex(s.color);
+        const font = s.fontFamily.split(',')[0].replace(/"/g, '');
+        
+        return `
+            <div style="padding: 12px; border-top: 1px solid #334155; line-height: 1.6;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8">Font</span> <span style="color:#e2e8f0; text-align:right">${truncate(font, 18)}</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8">Size</span> <span style="color:#e2e8f0">${s.fontSize} <span style="opacity:0.5">(${s.fontWeight})</span></span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8">Color</span> <span style="display:flex; align-items:center; gap:6px; color:${color}"><span style="width:10px; height:10px; background:${color}; border-radius:50%; border:1px solid #475569"></span>${color}</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8">Box</span> <span style="color:#f472b6">${Math.round(el.offsetWidth)} × ${Math.round(el.offsetHeight)}px</span></div>
+            </div>
+        `;
+    }
+
+    // --- CORE LOGIC ---
+    function updateUI(target) {
+        const rect = target.getBoundingClientRect();
+        const theme = THEMES[currentThemeKey];
+
+        highlighter.style.borderColor = theme.color;
+        highlighter.style.backgroundColor = theme.bg;
+        highlighter.style.display = 'block';
+        highlighter.style.top = rect.top + 'px'; highlighter.style.left = rect.left + 'px';
+        highlighter.style.width = rect.width + 'px'; highlighter.style.height = rect.height + 'px';
+
+        tooltip.style.display = 'block';
+        
+        // Header com Identidade NAJA®
+        const header = `
+            <div style="background: rgba(0,0,0,0.3); padding: 10px 12px; border-bottom: 2px solid ${theme.color}; font-size: 13px; font-weight:600;">
+                ${getElementLabel(target)}
+            </div>
+        `;
+        tooltip.innerHTML = header + getTechInfo(target);
+
+        // Colisão Inteligente (Mantenha dentro da tela)
+        const tW = tooltip.offsetWidth || 260, tH = tooltip.offsetHeight || 160, gap = 15;
+        let tTop = rect.bottom + gap, tLeft = rect.left;
+
+        if (tLeft + tW > window.innerWidth) tLeft = window.innerWidth - tW - gap;
+        if (tTop + tH > window.innerHeight) tTop = rect.top - tH - gap;
+        if (tTop < 0) tTop = gap; // Segurança topo
+
+        tooltip.style.top = tTop + 'px'; tooltip.style.left = tLeft + 'px';
+    }
+
+    // --- CONTROLES ---
+    document.addEventListener('mousemove', (e) => {
+        if (!isActive || isLocked) return;
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        if (!target || target === highlighter || target === tooltip) return;
+        lastHighlighted = target;
+        updateUI(target);
+    });
+
+    window.addEventListener('keydown', (e) => {
+        // SHIFT + I = Ligar/Desligar
+        if (e.shiftKey && e.key.toLowerCase() === 'i') {
+            isActive = !isActive;
+            isLocked = false;
+            highlighter.style.display = 'none'; tooltip.style.display = 'none';
+            document.body.style.cursor = isActive ? 'crosshair' : 'default';
+        }
+        // ESPAÇO = Travar seleção
+        if (isActive && e.code === 'Space') {
+            e.preventDefault();
+            isLocked = !isLocked;
+            highlighter.style.borderColor = isLocked ? '#fff' : THEMES[currentThemeKey].color;
+        }
+        // T = Trocar Tema (Neon/Matrix)
+        if (isActive && e.key.toLowerCase() === 't') {
+            currentThemeKey = currentThemeKey === 'NEON' ? 'MATRIX' : 'NEON';
+            if (lastHighlighted) updateUI(lastHighlighted);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (isActive && lastHighlighted) {
+            e.preventDefault(); e.stopImmediatePropagation();
+            
+            // Copia o Texto Limpo para IA (Ex: 'button "Quero Crescer"')
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = getElementLabel(lastHighlighted);
+            const cleanText = tempDiv.innerText.replace(/\s+/g, ' ').trim();
+            
+            navigator.clipboard.writeText(cleanText);
+            console.log('COBRA Ref:', cleanText, lastHighlighted);
+
+            // Flash Feedback
+            const originalBg = tooltip.querySelector('div').style.background;
+            tooltip.querySelector('div').style.background = THEMES[currentThemeKey].color;
+            setTimeout(() => tooltip.querySelector('div').style.background = originalBg, 200);
+        }
+    }, true);
+
+  })();
+</script>

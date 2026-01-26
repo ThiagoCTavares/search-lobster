@@ -1,0 +1,67 @@
+---
+import Button from "./ui/Button";
+---
+
+<nav 
+  id="smart-navbar"
+  class="fixed top-0 w-full z-50 transition-transform duration-500 will-change-transform
+    bg-ice-mute/20 
+    backdrop-blur-md 
+    border-b border-white/40 
+    shadow-[inset_0_0_30px_rgba(255,255,255,0.25)] 
+    shadow-sm shadow-ice-mute/10"
+>
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    
+    <a href="#inicio" class="block transition hover:opacity-80">
+      <img src="/Logo.svg" alt="Search Lobster" class="h-10" />
+    </a>
+
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <a class="transition hover:text-lobster-red" href="#porque-seo">Por que SEO</a>
+      <a class="transition hover:text-lobster-red" href="#publico">Público</a>
+      <a class="transition hover:text-lobster-red" href="#servicos">Serviços</a>
+      
+      <Button href="#contato" size="sm">
+        Contato
+      </Button>
+    </div>
+
+    <div class="md:hidden">
+      <Button href="#contato" size="sm">
+        Contato
+      </Button>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Lógica Smart Navbar
+  if (typeof window !== 'undefined') {
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('smart-navbar');
+
+    const updateNavbar = () => {
+      if (!navbar) return;
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        navbar.classList.add('-translate-y-full');
+      } else {
+        navbar.classList.remove('-translate-y-full');
+      }
+      lastScrollY = currentScrollY;
+    };
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateNavbar();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+</script>

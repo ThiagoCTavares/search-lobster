@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* --- 1. Configuração do Tema (Almoxarifado) --- */
+@theme {
+  /* Cores */
+  --color-lobster-red: #fa382e;
+  --color-slate-deep: #495454;
+  --color-slate-mid: #778a8a;
+  --color-ice-grey: #cadede;
+  --color-lobster-grey: #778a8a;
+  --color-ice-light: #f0f8f8;
+  --color-ice-mute: #e0f0f0;
+  --color-ice: #d3f0f0;
+
+  /* Fontes */
+  --font-sans: "arponasans", sans-serif;
+  --font-title: "interface", sans-serif;
+}
+
+/* --- 2. Reset Básico --- */
+:root {
+  color-scheme: light;
+}
+
+/* --- Personalização da Seleção de Texto --- */
+::selection {
+  background-color: var(--color-lobster-red);
+  color: var(--color-ice-light);
+}
+
+::-moz-selection {
+  background-color: var(--color-lobster-red);
+  color: var(--color-ice-light);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-ice-light);
+  /* Definimos a cor base como slate-mid conforme seu pedido */
+  color: var(--color-slate-mid); 
+  @apply antialiased;
+}
+
+/* --- 2.1. Foco Visível (Acessibilidade) --- */
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--color-lobster-red);
+  outline-offset: 3px;
+}
+
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- 3. Tipografia Base (Automática) --- */
+@layer base {
+  
+  /* H1 = Interface, GG, Bold, slate-mid */
+  h1 {
+    @apply font-title font-bold text-slate-mid;
+    @apply text-5xl md:text-7xl; /* GG: Gigante no Desktop */
+    @apply leading-tight tracking-tight; /* Aperta o texto pra ficar bonito */
+  }
+  
+  /* H2 = Interface, G, Bold, slate-mid */
+  h2 {
+    @apply font-title font-bold text-slate-mid;
+    @apply text-4xl md:text-5xl; /* G */
+    @apply leading-tight tracking-tight;
+  }
+
+  /* H3 = Interface, M, Semibold, slate-mid */
+  h3 {
+    @apply font-title font-semibold text-slate-mid;
+    @apply text-2xl md:text-3xl; /* M */
+    @apply leading-snug;
+  }
+
+  /* P1 (Padrão) = Arponasans, P, Light, slate-mid */
+  p {
+    @apply font-sans font-light text-slate-mid;
+    @apply text-base md:text-base;
+    @apply leading-relaxed;
+  }
+
+  /* Links e Listas herdam a fonte sans por padrão */
+  a, li, span {
+    @apply font-sans text-slate-mid;
+  }
+}
+
+/* --- 4. Classes Utilitárias (Estilos Específicos) --- */
+@layer components {
+  
+  /* P2 = Arponasans, PP, Thin, slate-mid */
+  /* Use assim: <p class="p2">Texto miúdo</p> */
+  .p2 {
+    @apply font-sans font-thin text-slate-mid;
+    @apply text-sm; /* PP: Pequeno */
+    @apply leading-normal opacity-90;
+  }
+
+  /* Bônus: Classe para quando quiser destacar algo em Laranja */
+  .highlight {
+    @apply text-lobster-red font-bold;
+  }
+
+  .hero-heading-line {
+    @apply font-title leading-tight tracking-tight text-slate-mid;
+  }
+
+  .hero-heading-bold {
+    @apply font-bold;
+  }
+
+  .hero-heading-primary {
+    @apply text-6xl md:text-7xl;
+  }
+
+  .hero-heading-secondary {
+    @apply text-5xl md:text-6xl -mt-1;
+  }
+}
+
+/* --- 5. Animações Globais (Scroll Reveal) --- */
+/* Estas classes controlam o efeito de aparecer ao rolar */
+
+.reveal {
+  opacity: 0;
+  /* Aumentei a distância de 30px para 50px para o movimento ser mais longo */
+  transform: translate3d(0, 50px, 0); 
+  
+  /* Aumentei o tempo de 1s para 1.8s. 
+     Isso cria aquele efeito "camera lenta" luxuoso. */
+  transition: opacity 1.8s ease-out, transform 1.8s ease-out; 
+  
+  will-change: opacity, transform;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}

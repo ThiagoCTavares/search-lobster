@@ -1,0 +1,100 @@
+---
+const { title = "Search Lobster" } = Astro.props;
+// Descrição Mestra para SEO
+const description = "Agência Search Lobster: SEO estratégico que vira ativo de crescimento. Consultoria de alta performance para escalar sua autoridade digital.";
+
+import '../styles/global.css';
+import IceOrganicMembranaBg from "../components/ui/IceOrganicMembranaBg.astro";
+import LobsterSwarm from "../components/effects/LobsterSwarm";
+
+const isDev = import.meta.env.DEV;
+let CobraScope;
+if (isDev) {
+  const mod = await import("../components/devtools/CobraScope.astro");
+  CobraScope = mod.default;
+}
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    
+    <link rel="icon" type="image/svg+xml" href="/Logo%20favicon.svg" />
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/social-share.jpg" />
+    <meta property="og:url" content={Astro.url.href} />
+    <link rel="canonical" href={Astro.url.href} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin />
+    <link rel="stylesheet" href="https://use.typekit.net/cvh7rbz.css" />
+  </head>
+  
+  <body class="bg-ice-light text-slate-deep antialiased overflow-x-hidden">
+    
+    <IceOrganicMembranaBg />
+    
+    <LobsterSwarm client:idle />
+    
+    <slot />
+    
+    {isDev && CobraScope && <CobraScope />}
+
+    <script>
+      import Lenis from 'lenis';
+
+      // --- 1. ENGINE DE SCROLL SOFISTICADO (LENIS) ---
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // --- 2. CORREÇÃO DE LINKS ÂNCORA COM LENIS ---
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          if (targetId && targetId !== '#') {
+            lenis.scrollTo(targetId, {
+              offset: -100,
+              duration: 1.5
+            });
+          }
+        });
+      });
+
+      // --- 3. ENGINE DE FADE-IN (SCROLL REVEAL) ---
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+  </body>
+</html>
