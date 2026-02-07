@@ -34,23 +34,27 @@ const ArrowIcon = () => (
   </svg>
 );
 
+// ALTERAÇÃO AQUI: Mudado de font-bold para font-semibold
 const baseStyles =
-  "group inline-flex items-center justify-center font-sans font-semibold rounded-full border-2 border-transparent active:scale-95";
+  "group inline-flex items-center justify-center font-sans font-semibold rounded-full border-2 border-transparent active:scale-95 transition-all duration-300";
 
 const variants: Record<Variant, string> = {
+  // Primary: Vidro estável (sem mudança de cor no hover)
   primary: 
-    "bg-ice-grey/40 text-slate-mid " +    // Base translúcida
-    "backdrop-blur-md " +                 // Efeito Vidro
-    "border border-white/30 " +           // Borda sutil
-    "shadow-[inset_0_0_15px_rgba(255,255,255,0.3)] ", // Brilho interno 3D
-    // SEM HOVER DE COR: Ele mantém a aparência de vidro, apenas muda a forma
+    "bg-ice-grey/60 text-slate-deep " +
+    "backdrop-blur-md " +                 
+    "border border-white/40 " +           
+    "shadow-[inset_0_0_15px_rgba(255,255,255,0.4)]", 
 
-  secondary: "bg-slate-deep text-ice-light hover:bg-lobster-red hover:text-white shadow-md",
-  outline: "border-2 border-lobster-red text-lobster-red hover:bg-lobster-red hover:text-white",
+  // Secondary: Sólido estável
+  secondary: "bg-slate-deep text-ice-light shadow-md",
+  
+  // Outline: Borda estável
+  outline: "border-2 border-lobster-red text-lobster-red",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "px-4 py-1.5 text-sm",
+  sm: "px-5 py-2 text-sm",
   md: "px-8 py-3 text-base",
   lg: "px-12 py-4 text-lg tracking-wide",
 };
@@ -63,14 +67,12 @@ export default function Button({
   children,
   ...props
 }: Props) {
-  // Estado para a física aleatória
   const [organicStyle, setOrganicStyle] = useState<{ transitionDuration: string; transitionTimingFunction: string }>({
     transitionDuration: "400ms",
     transitionTimingFunction: "ease-out"
   });
 
   const handleMouseEnter = () => {
-    // Sorteia duração e elasticidade a cada hover para parecer orgânico
     const randomDuration = 400 + Math.random() * 400; 
     const curve = `cubic-bezier(0.34, 1.56, 0.64, 1)`;
 

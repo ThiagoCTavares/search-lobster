@@ -12,7 +12,6 @@
     <div class="blob life-pulsar bg-ice-mute"></div>
 
     <div class="blob membrane-alpha"></div>
-    
     <div class="blob membrane-omega"></div>
 
     <div class="blob rare-scout bg-slate-mid"></div>
@@ -25,49 +24,53 @@
   .blob {
     position: absolute;
     border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-    /* GPU Acceleration */
     will-change: transform;
     backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
   }
 
-  /* Mix Blend - Lista reduzida */
+  /* Mix Blend */
   .giant-1, .giant-2, .life-pulsar, .rare-scout {
     mix-blend-mode: multiply;
   }
 
-  /* --- CONFIGURAÇÃO DAS MEMBRANAS --- */
+  /* --- CONFIGURAÇÃO DAS MEMBRANAS (CAMINHO A) --- */
   .membrane-alpha, .membrane-omega {
     background: transparent;
-    border: 2.5px solid var(--color-ice-mute);
-    opacity: 0.9;
+    /* MANTIDO ice-mute, mas aumentado para 3px para definição */
+    border: 3px solid var(--color-ice-mute);
+    /* Opacidade total para garantir visibilidade */
+    opacity: 1; 
     filter: blur(1.5px);
     box-shadow: inset 0 0 15px rgba(0,0,0,0.01);
   }
 
-  /* 1. GIGANTES (Atmosfera) */
+  /* 1. GIGANTES (Atmosfera - Opacidade Aumentada) */
   .giant-1 {
     top: -15%; right: -15%; width: 40vw; height: 40vw;
-    filter: blur(40px); opacity: 0.6;
+    filter: blur(40px); 
+    opacity: 0.85; /* Aumentado de 0.6 para 0.85 */
     animation: tide 60s infinite alternate ease-in-out;
   }
   .giant-2 {
     bottom: -15%; left: -15%; width: 50vw; height: 50vw;
-    filter: blur(45px); opacity: 0.2;
+    filter: blur(45px); 
+    opacity: 0.5; /* Aumentado de 0.2 para 0.5 */
     animation: tide 70s infinite alternate-reverse ease-in-out;
   }
   
-  /* 2. PULSAR (Única forma 'viva' média restante) */
+  /* 2. PULSAR (Opacidade Aumentada) */
   .life-pulsar {
     top: 40%; right: 30%; width: 18vw; height: 18vw;
-    filter: blur(45px); opacity: 0.65;
+    filter: blur(45px); 
+    opacity: 0.9; /* Aumentado de 0.65 para 0.9 */
     animation: circular-pulse 35s infinite linear, morph-medium 15s infinite alternate ease-in-out;
   }
 
   /* 3. MEMBRANAS (Linhas) */
   .membrane-omega {
     top: -50%; left: -50%; width: 90vw; height: 90vw;
-    border-width: 1.5px; opacity: 0.7;
+    opacity: 1; /* Máxima visibilidade */
     animation: hunt-titan 180s infinite linear, morph-aggressive 25s infinite alternate ease-in-out;
     animation-delay: 5s;
   }
@@ -83,7 +86,7 @@
     animation: rare-visit 60s infinite cubic-bezier(0.4, 0, 0.2, 1), morph-light 5s infinite alternate ease-in-out;
   }
 
-  /* --- COREOGRAFIAS (GPU Optimized) --- */
+  /* --- COREOGRAFIAS --- */
   @keyframes tide { 
     0% { transform: translate3d(0, 0, 0); } 
     100% { transform: translate3d(-30px, 20px, 0); } 
@@ -110,13 +113,13 @@
     100% { transform: translate3d(110vw, -15vh, 0); opacity: 0; } 
   }
 
-  /* --- MORPHS (Mantidos apenas os necessários) --- */
+  /* --- MORPHS --- */
   @keyframes morph-medium { 0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } }
   @keyframes morph-aggressive { 0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 50% { border-radius: 80% 20% 50% 50% / 40% 40% 60% 60%; } 75% { border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%; } 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } }
   @keyframes morph-light { 0% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; } 100% { border-radius: 45% 55% 55% 45% / 45% 55% 45% 55%; } }
 
   @media (max-width: 768px) {
-    .giant-1, .giant-2 { opacity: 0.4; }
+    .giant-1, .giant-2 { opacity: 0.6; } /* Aumentado no mobile também */
     .membrane-alpha { width: 45vw; height: 45vw; }
     .membrane-omega { width: 120vw; height: 120vw; }
   }

@@ -20,33 +20,39 @@ export default function HeroMotion() {
     <LazyMotion features={domAnimation}>
       <m.section
         id="inicio"
-        className="reveal relative isolate overflow-hidden bg-transparent"
+        className="reveal relative isolate overflow-hidden bg-transparent min-h-[90vh] flex flex-col items-center justify-center pt-32"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.6 }}
       >
-        <div className="mx-auto max-w-7xl px-6 py-36 lg:py-52 relative z-10">
-          <m.div variants={container} className="space-y-6 max-w-xl lg:max-w-3xl">
-            <m.h1 variants={item} className="font-title leading-tight text-slate-mid">
-              <span className="block hero-heading-line hero-heading-bold hero-heading-primary">Presença Digital</span>
-              <span className="block hero-heading-line hero-heading-bold hero-heading-primary">Orgânica</span>
-              <span className="block mt-4 hero-heading-line text-2xl md:text-3xl font-normal">
-                e duradoura:
-                <span className="font-title font-[700]"> O SEO</span>
+        <div className="mx-auto max-w-7xl px-6 relative z-10 w-full">
+          
+          <m.div variants={container} className="flex flex-col items-center text-center mx-auto max-w-6xl space-y-10">
+            
+            <m.h1 variants={item} className="font-title leading-tight text-slate-deep">
+              {/* Linha 1 */}
+              <span className="block hero-heading-line hero-heading-bold hero-heading-primary mb-2">
+                Presença Digital Orgânica
               </span>
-              <span className="block hero-heading-line text-2xl md:text-3xl font-normal">
-                que <span className="font-title font-[700]">REALMENTE</span> acontece
+              
+              {/* Linha 2: Ajustada conforme pedido */}
+              <span className="block hero-heading-line text-2xl md:text-4xl font-normal">
+                o <span className="font-bold">SEO</span> que realmente acontece
               </span>
             </m.h1>
-            <m.p variants={item} className="font-sans font-light text-base text-slate-mid">
-              <span className="block">Construa uma autoridade sólida para a sua marca nas pesquisas,</span>
-              <span className="block">sem promessas vazias.</span>
+
+            {/* Parágrafo: Quebra de linha forçada */}
+            <m.p variants={item} className="font-sans font-light text-lg md:text-xl text-slate-deep max-w-4xl leading-relaxed">
+              Construa uma autoridade sólida e <strong className="font-bold">duradoura</strong> para a sua marca nas pesquisas,
+              <span className="block md:mt-1">sem promessas vazias.</span>
             </m.p>
-            <m.div variants={item} className="flex flex-wrap gap-4">
-              <Button href="#publico" size="md">
+
+            <m.div variants={item} className="pt-6">
+              <Button href="#publico" size="lg">
                 Descubra por que seu site não é visto
               </Button>
             </m.div>
+
           </m.div>
         </div>
       </m.section>

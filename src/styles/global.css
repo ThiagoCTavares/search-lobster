@@ -4,8 +4,11 @@
 @theme {
   /* Cores */
   --color-lobster-red: #fa382e;
-  --color-slate-deep: #495454;
-  --color-slate-mid: #778a8a;
+  
+  /* CONTRASTE MÁXIMO (Solicitado) */
+  --color-slate-deep: #3E4747; /* O Chumbo Profundo exato que você pediu */
+  --color-slate-mid: #5C6B6B;  /* Ajustado para acompanhar o tom mais escuro */
+  
   --color-ice-grey: #cadede;
   --color-lobster-grey: #778a8a;
   --color-ice-light: #f0f8f8;
@@ -36,8 +39,10 @@
 body {
   font-family: var(--font-sans);
   background-color: var(--color-ice-light);
-  /* Definimos a cor base como slate-mid conforme seu pedido */
-  color: var(--color-slate-mid); 
+  
+  /* APLICAÇÃO GERAL: Texto agora usa a cor sólida #3E4747 */
+  color: var(--color-slate-deep); 
+  
   @apply antialiased;
 }
 
@@ -54,58 +59,55 @@ body {
 /* --- 3. Tipografia Base (Automática) --- */
 @layer base {
   
-  /* H1 = Interface, GG, Bold, slate-mid */
+  /* H1 e H2 usam a cor profunda */
   h1 {
-    @apply font-title font-bold text-slate-mid;
-    @apply text-5xl md:text-7xl; /* GG: Gigante no Desktop */
-    @apply leading-tight tracking-tight; /* Aperta o texto pra ficar bonito */
+    @apply font-title font-bold text-slate-deep;
+    @apply text-5xl md:text-7xl; 
+    @apply leading-tight tracking-tight; 
   }
   
-  /* H2 = Interface, G, Bold, slate-mid */
   h2 {
-    @apply font-title font-bold text-slate-mid;
-    @apply text-4xl md:text-5xl; /* G */
+    @apply font-title font-bold text-slate-deep;
+    @apply text-4xl md:text-5xl; 
     @apply leading-tight tracking-tight;
   }
 
-  /* H3 = Interface, M, Semibold, slate-mid */
+  /* H3 usa o tom médio para hierarquia visual */
   h3 {
-    @apply font-title font-semibold text-slate-mid;
-    @apply text-2xl md:text-3xl; /* M */
+    @apply font-title font-semibold text-slate-deep;
+    @apply text-2xl md:text-3xl; 
     @apply leading-snug;
   }
 
-  /* P1 (Padrão) = Arponasans, P, Light, slate-mid */
+  /* Parágrafos Padrão */
   p {
-    @apply font-sans font-light text-slate-mid;
+    @apply font-sans font-light text-slate-deep; /* Leitura máxima */
     @apply text-base md:text-base;
     @apply leading-relaxed;
   }
 
-  /* Links e Listas herdam a fonte sans por padrão */
+  /* Links e Listas */
   a, li, span {
-    @apply font-sans text-slate-mid;
+    @apply font-sans text-slate-deep;
   }
 }
 
-/* --- 4. Classes Utilitárias (Estilos Específicos) --- */
+/* --- 4. Classes Utilitárias --- */
 @layer components {
   
-  /* P2 = Arponasans, PP, Thin, slate-mid */
-  /* Use assim: <p class="p2">Texto miúdo</p> */
+  /* Texto de apoio (miúdo) */
   .p2 {
-    @apply font-sans font-thin text-slate-mid;
-    @apply text-sm; /* PP: Pequeno */
+    @apply font-sans font-thin text-slate-deep;
+    @apply text-sm; 
     @apply leading-normal opacity-90;
   }
 
-  /* Bônus: Classe para quando quiser destacar algo em Laranja */
   .highlight {
     @apply text-lobster-red font-bold;
   }
 
   .hero-heading-line {
-    @apply font-title leading-tight tracking-tight text-slate-mid;
+    @apply font-title leading-tight tracking-tight text-slate-deep;
   }
 
   .hero-heading-bold {
@@ -121,18 +123,11 @@ body {
   }
 }
 
-/* --- 5. Animações Globais (Scroll Reveal) --- */
-/* Estas classes controlam o efeito de aparecer ao rolar */
-
+/* --- 5. Animações Globais --- */
 .reveal {
   opacity: 0;
-  /* Aumentei a distância de 30px para 50px para o movimento ser mais longo */
   transform: translate3d(0, 50px, 0); 
-  
-  /* Aumentei o tempo de 1s para 1.8s. 
-     Isso cria aquele efeito "camera lenta" luxuoso. */
   transition: opacity 1.8s ease-out, transform 1.8s ease-out; 
-  
   will-change: opacity, transform;
 }
 
